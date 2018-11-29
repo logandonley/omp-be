@@ -7,6 +7,9 @@ node('master') {
   env.NAMESPACE = readFile('/var/run/secrets/kubernetes.io/serviceaccount/namespace').trim()
   env.TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
   env.OC_CMD = "oc --token=${env.TOKEN} --server=${ocpApiServer} --certificate-authority=/run/secrets/kubernetes.io/serviceaccount/ca.crt --namespace=${env.NAMESPACE}"
+}
+
+node('nodejs') {
   input(pwd)
   def groupVars = readYaml file: '.openshift-applier/inventory/group_vars/all.yml'
   env.APP_NAME = """${groupVars.app_name}"""
@@ -18,9 +21,6 @@ node('master') {
   env.STAGE1 = """${groupVars.dev_namespace}"""
   // env.STAGE2 = """${groupVars.stage_namespace}"""
   // env.STAGE3 = """${groupVars.prod_namespace}"""
-}
-
-node('nodejs') {
 
   stage('SCM Checkout') {
     checkout scm
